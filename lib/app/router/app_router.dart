@@ -47,16 +47,21 @@ class AppRouter {
         String reason = 'Direct access allowed';
         String? targetDashboard;
 
-        // 1. Root "/" check with skipAdminRedirect support
+        // 1. Root "/" check with skipAdminRedirect support & guest login redirect
         if (location == AppRoutes.home) {
           final skipAdmin =
               state.uri.queryParameters['skipAdminRedirect'] == 'true';
-          if (isAuthenticated && !skipAdmin) {
-            if (AppRoutes.hasRole(
-                role, ['school_admin', 'school admin', 'school'])) {
-              redirectDestination = AppRoutes.schoolDashboard;
-              reason = 'Authenticated school_admin accessing root /';
+          if (isAuthenticated) {
+            if (!skipAdmin) {
+              if (AppRoutes.hasRole(
+                  role, ['school_admin', 'school admin', 'school'])) {
+                redirectDestination = AppRoutes.schoolDashboard;
+                reason = 'Authenticated school_admin accessing root /';
+              }
             }
+          } else {
+            redirectDestination = AppRoutes.login;
+            reason = 'Unauthenticated guest accessing root / redirected to /login';
           }
         } else if (isAuthenticated && AppRoutes.guestOnlyRoutes.contains(location)) {
           // 2. Guest-only auth flow routes (/login, /register, /password-reset)

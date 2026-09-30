@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import '../../../../app/router/app_routes.dart';
 import '../../../../core/network/api_client.dart';
 import '../../../../core/utils/url_opener.dart';
 import '../question_paper_generator/data/question_paper_api_service.dart';
@@ -140,6 +141,19 @@ class _QuestionPaperReviewScreenState extends State<QuestionPaperReviewScreen>
     }
   }
 
+  void _handleBack() {
+    if (Navigator.of(context).canPop()) {
+      Navigator.of(context).pop();
+    } else {
+      final router = GoRouter.maybeOf(context);
+      if (router != null) {
+        router.go(
+          '${AppRoutes.teacherDashboard}?tab=${Uri.encodeComponent('AI Question Paper Generator')}',
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -149,7 +163,7 @@ class _QuestionPaperReviewScreenState extends State<QuestionPaperReviewScreen>
         foregroundColor: Colors.white,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () => context.go('/teacher-dashboard'),
+          onPressed: _handleBack,
         ),
         bottom: _paper != null
             ? TabBar(

@@ -58,12 +58,13 @@ void main() {
     });
 
     // ─── 2. Initial / Public Route '/' ──────────────────────────────────────
-    testWidgets('2. Initial route "/" renders landing placeholder for guest', (tester) async {
+    testWidgets('2. Initial route "/" redirects unauthenticated guest to /login', (tester) async {
       final router = AppRouter.createRouter(storage, initialLocation: '/');
       await pumpRouter(tester, router);
 
-      expect(find.byType(PlaceholderScreen), findsOneWidget);
-      expect(find.text('Module: AceEdx Home'), findsOneWidget);
+      expect(find.byType(LoginScreen), findsOneWidget);
+      expect(find.byType(PlaceholderScreen), findsNothing);
+      expect(router.state.uri.path, equals('/login'));
     });
 
     // ─── 3. Direct Navigation to /login and Protected Route Redirects ───────

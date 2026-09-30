@@ -268,6 +268,59 @@ void main() {
       expect(find.textContaining('PDF Generated: https://deve.aceedx.com/storage/papers/55.pdf'), findsOneWidget);
     });
 
+    testWidgets('J2. QuestionPaperReviewScreen Back button pops and returns to previous screen', (tester) async {
+      const samplePaper = QuestionPaper(
+        id: 74,
+        className: '10',
+        marks: 80,
+        subjectName: 'Mathematics',
+        chapterName: 'Quadratic Equations',
+        status: 'approved',
+      );
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Builder(
+            builder: (context) => Scaffold(
+              body: Center(
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => const QuestionPaperReviewScreen(
+                          initialPaper: samplePaper,
+                        ),
+                      ),
+                    );
+                  },
+                  child: const Text('Open Review'),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+
+      await tester.pumpAndSettle();
+      expect(find.text('Open Review'), findsOneWidget);
+
+      // Navigate to Review screen
+      await tester.tap(find.text('Open Review'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Paper Review (ID: 74)'), findsOneWidget);
+
+      // Tap Back button (arrow_back)
+      final backButton = find.byIcon(Icons.arrow_back);
+      expect(backButton, findsOneWidget);
+      await tester.tap(backButton);
+      await tester.pumpAndSettle();
+
+      // Should have returned to previous screen
+      expect(find.text('Open Review'), findsOneWidget);
+      expect(find.text('Paper Review (ID: 74)'), findsNothing);
+    });
+
     // K & L. Regression check: selected unit_ids remain List<int> in generation request
     test('K & L. Generation request still produces unit_ids as List<int>', () {
       const request = QuestionPaperGenerationRequest(
